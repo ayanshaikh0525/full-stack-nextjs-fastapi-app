@@ -41,7 +41,7 @@ if not database_url:
     raise ValueError("DATABASE_URL environment variable is not set!")
 
 parsed_db_url = urlparse(database_url)
-
+print(parsed_db_url)
 async_db_connection_url = (
     f"postgresql+asyncpg://{parsed_db_url.username}:{parsed_db_url.password}@"
     f"{parsed_db_url.hostname}{':' + str(parsed_db_url.port) if parsed_db_url.port else ''}"
