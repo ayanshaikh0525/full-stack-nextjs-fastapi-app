@@ -43,22 +43,27 @@ export async function passwordResetConfirm(
   }
 
   const { token, password } = validatedFields.data;
+
   const input = {
     body: {
       token,
       password,
     },
   };
+
   try {
     const { error } = await resetResetPassword(input);
+
     if (error) {
       return { server_validation_error: getErrorMessage(error) };
     }
-    redirect(`/login`);
   } catch (err) {
     console.error("Password reset confirmation error:", err);
     return {
       server_error: "An unexpected error occurred. Please try again later.",
     };
   }
+
+  // ✅ OUTSIDE try-catch
+  redirect("/login");
 }
