@@ -12,15 +12,14 @@ COPY package*.json ./
 # Install dependencies as root (or myappuser, depending on your structure)
 RUN pnpm install
 
+# Copy the rest of your application code
+COPY . .
+
 # give ownership to node user
 RUN chown -R node:node /app
 
 ## Switch to the non-root user
 USER node
-
-
-# Copy the rest of your application code
-COPY . .
 
 EXPOSE 3000
 
