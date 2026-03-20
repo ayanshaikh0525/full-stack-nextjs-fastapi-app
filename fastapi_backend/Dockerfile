@@ -12,6 +12,10 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.local/bin:$PATH"
 
 COPY pyproject.toml uv.lock ./
+
+
+RUN uv venv /app/.venv
+
 RUN uv sync --frozen
 
 # ----------- Runtime Stage -----------
