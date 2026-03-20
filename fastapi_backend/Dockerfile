@@ -11,11 +11,12 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 ENV PATH="/root/.local/bin:$PATH"
 
+# CRITICAL FIX
+ENV UV_SYSTEM_PYTHON=1
+
 COPY pyproject.toml uv.lock ./
 
-
 RUN uv venv /app/.venv
-
 RUN uv sync --frozen
 
 # ----------- Runtime Stage -----------
@@ -23,12 +24,12 @@ FROM python:3.12-slim-bookworm
 
 WORKDIR /app
 
-RUN pip install uv
+COPY --from=builder /app/.venv /app/.venv
 
-COPY pyproject.toml uv.lock ./
-
-RUN uv sync --frozen
+ENV PATH="/app/.venv/bin:$PATH"
 
 COPY . .
+
+RUN chmod +x start.sh
 
 CMD ["./start.sh"]
