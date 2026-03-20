@@ -2,7 +2,7 @@
 set -e
 
 echo "Running migrations..."
-python -m alembic upgrade head
+/app/.venv/bin/python -m alembic upgrade head
 
 echo "Starting FastAPI..."
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000
+exec /app/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
