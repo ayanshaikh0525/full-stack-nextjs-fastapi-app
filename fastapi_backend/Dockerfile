@@ -1,4 +1,5 @@
 # ----------- Builder Stage -----------
+
 FROM python:3.12-slim-bookworm AS builder
 
 WORKDIR /app
@@ -11,12 +12,18 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 ENV PATH="/root/.local/bin:$PATH"
 
-# CRITICAL FIX
+# MUST be before uv commands
 ENV UV_SYSTEM_PYTHON=1
 
 COPY pyproject.toml uv.lock ./
 
+# remove any old venv just in case
+RUN rm -rf /app/.venv
+
+# create fresh venv using system python
 RUN uv venv /app/.venv
+
+# install deps into that venv
 RUN uv sync --frozen
 
 # ----------- Runtime Stage -----------
