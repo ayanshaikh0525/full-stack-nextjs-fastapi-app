@@ -23,14 +23,12 @@ FROM python:3.12-slim-bookworm
 
 WORKDIR /app
 
-COPY --from=builder /app/.venv /app/.venv
+RUN pip install uv
 
-ENV PATH="/app/.venv/bin:$PATH"
+COPY pyproject.toml uv.lock ./
+
+RUN uv sync --frozen
 
 COPY . .
-
-RUN chmod +x start.sh
-
-EXPOSE 8000
 
 CMD ["./start.sh"]
