@@ -1,33 +1,40 @@
-FROM python:3.12-bookworm
+# ----------- Builder Stage -----------
+FROM python:3.12-bookworm AS builder
 
-# Set the working directory
 WORKDIR /app
 
-# The uv installer requires curl (and certificates) to download the release archive
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+# Install required tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates
 
-# Download the latest uv installer
+# Install uv
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
-
-# Run the uv installer then remove it
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 
-# Ensure the installed binary is on the `PATH`
 ENV PATH="/root/.local/bin/:$PATH"
 
-# Copy dependency files first to leverage Docker caching
+# Copy only dependency files first (for caching)
 COPY pyproject.toml uv.lock ./
 
-# Install dependencies using uv
+# Install dependencies into .venv
 RUN uv sync --frozen
 
+# ----------- Runtime Stage -----------
+FROM python:3.12-slim-bookworm
+
+WORKDIR /app
+
+# Copy virtual environment from builder
+COPY --from=builder /app/.venv /app/.venv
+
+# Set PATH to use venv
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Copy the rest of the application code
+# Copy application code
 COPY . .
 
-# Expose the application port
+# Expose port
 EXPOSE 8000
 
-# Command to run the application
+# Run app
 CMD ["./start.sh"]
