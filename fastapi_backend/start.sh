@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+echo "PATH=$PATH"
+which python
+ls /app/.venv/bin | grep alembic
+
 echo "Running migrations..."
 /app/.venv/bin/python -m alembic upgrade head
 
