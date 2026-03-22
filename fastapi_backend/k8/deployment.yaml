@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: fastapi
-        image: 928413605425.dkr.ecr.ap-south-1.amazonaws.com/full-stack-backend:latest
+        image: 928413605425.dkr.ecr.us-east-1.amazonaws.com/full-stack-backend:latest
         ports:
         - containerPort: 8000
         env:
