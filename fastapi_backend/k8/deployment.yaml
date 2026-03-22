@@ -19,7 +19,7 @@ spec:
         - containerPort: 8000
         env:
         - name: DATABASE_URL
-          value: "postgresql://postgres:password@database-1.c0f08e8sy7uu.us-east-1.rds.amazonaws.com:5432/fastapidb"
+          value: "postgresql://postgres:password@fastapidb.c0f08e8sy7uu.us-east-1.rds.amazonaws.com:5432/fastapidb"
         - name: ACCESS_SECRET_KEY
           value: "9f3c2a6e8b7d4c1a5e2f8b6c9d0a1f3e7b2c4d6e8f9a0b1c2d3e4f5a6b7c8d9"
         - name: RESET_PASSWORD_SECRET_KEY
