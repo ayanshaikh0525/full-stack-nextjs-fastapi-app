@@ -21,13 +21,13 @@ spec:
         - name: DATABASE_URL
           value: "postgresql://postgres:password@database-1.c0f08e8sy7uu.us-east-1.rds.amazonaws.com:5432/fastapi_db"
         - name: ACCESS_SECRET_KEY
-          value: 9f3c2a6e8b7d4c1a5e2f8b6c9d0a1f3e7b2c4d6e8f9a0b1c2d3e4f5a6b7c8d9
+          value: "9f3c2a6e8b7d4c1a5e2f8b6c9d0a1f3e7b2c4d6e8f9a0b1c2d3e4f5a6b7c8d9"
         - name: RESET_PASSWORD_SECRET_KEY
-          value: 3c7e9a1f5b2d8c4e6f0a9b3d7e1c2a5f8b4d6e9c0a1f2b3d4c5e6f7a8b9c0d1
+          value: "3c7e9a1f5b2d8c4e6f0a9b3d7e1c2a5f8b4d6e9c0a1f2b3d4c5e6f7a8b9c0d1"
         - name: VERIFICATION_SECRET_KEY
-          value: 9b1d4f7c2a8e3c6d5f0a2b9e1c7d4f8a6b3c0e5d1f2a9b7c4d6e8f0a1c3b5d7
+          value: "9b1d4f7c2a8e3c6d5f0a2b9e1c7d4f8a6b3c0e5d1f2a9b7c4d6e8f0a1c3b5d7"
         - name: FRONTEND_URL
-          value: http://localhost:3000
+          value: "http://localhost:3000"
         - name: CORS_ORIGINS
-          value: ["*"]
+          value: "*"
           
