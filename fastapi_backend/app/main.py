@@ -6,10 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from .utils import simple_generate_unique_route_id
 from app.routes.items import router as items_router
 from app.config import settings
+import os
 
 app = FastAPI(
     generate_unique_id_function=simple_generate_unique_route_id,
     openapi_url=settings.OPENAPI_URL,
+    root_path=os.getenv("ROOT_PATH", ""),
 )
 
 # Middleware for CORS configuration
