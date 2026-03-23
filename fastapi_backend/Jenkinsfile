@@ -6,6 +6,7 @@ pipeline {
         ECR_REPO = '928413605425.dkr.ecr.us-east-1.amazonaws.com/full-stack-backend'
         CLUSTER_NAME = 'my-eks-cluster'
         DEPLOYMENT_NAME = 'fastapi-deployment'
+        KANIKO_IMAGE    = 'gcr.io/kaniko-project/executor:latest'
     }
 
     stages {
