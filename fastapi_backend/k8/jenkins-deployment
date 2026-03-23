@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts
+        securityContext:
+          privileged: true                 # Needed for Docker
+        volumeMounts:
+        - name: docker-sock
+          mountPath: /var/run/docker.sock # Mount host Docker
+        ports:
+        - containerPort: 8080
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
