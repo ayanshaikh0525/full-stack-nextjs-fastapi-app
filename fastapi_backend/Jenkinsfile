@@ -17,16 +17,17 @@ pipeline {
             }
         }
 
-       stage('Build & Push Docker Image with Kaniko') {
+        
+        stage('Build & Push Docker Image with Kaniko') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-jenkins']]) {
                     sh '''
-                    mkdir -p /workspace/.docker
-                    echo "{\"credHelpers\": {\"$ECR_REPO\": \"ecr-login\"}}" > /workspace/.docker/config.json
+                    mkdir -p $WORKSPACE/.docker
+                    echo "{\"credHelpers\": {\"$ECR_REPO\": \"ecr-login\"}}" > $WORKSPACE/.docker/config.json
 
                     docker run --rm \
                       -v $WORKSPACE:/workspace \
-                      -v /workspace/.docker:/kaniko/.docker \
+                      -v $WORKSPACE/.docker:/kaniko/.docker \
                       $KANIKO_IMAGE \
                       --dockerfile=/workspace/Dockerfile \
                       --context=/workspace \
