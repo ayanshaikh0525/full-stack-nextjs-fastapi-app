@@ -1,12 +1,35 @@
 pipeline {
-    agent any  // Now Jenkins node has Docker installed
+  agent {
+        kubernetes {
+            label 'kaniko-agent'
+            defaultContainer 'jnlp'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+      - cat
+    tty: true
+    volumeMounts:
+      - name: kaniko-secret
+        mountPath: /kaniko/.docker
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: kaniko-secret
+"""
+        }
+    }
 
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REPO = '928413605425.dkr.ecr.us-east-1.amazonaws.com/full-stack-backend'
         CLUSTER_NAME = 'my-eks-cluster'
         DEPLOYMENT_NAME = 'fastapi-deployment'
-        KANIKO_IMAGE    = 'gcr.io/kaniko-project/executor:latest'
+       
     }
 
     stages {
@@ -18,26 +41,19 @@ pipeline {
         }
 
         
-        stage('Build & Push Docker Image with Kaniko') {
+       stage('Build & Push Docker Image with Kaniko') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-jenkins']]) {
-                    sh '''
-                    mkdir -p $WORKSPACE/.docker
-                    echo "{\"credHelpers\": {\"$ECR_REPO\": \"ecr-login\"}}" > $WORKSPACE/.docker/config.json
-
-                    docker run --rm \
-                      -v $WORKSPACE:/workspace \
-                      -v $WORKSPACE/.docker:/kaniko/.docker \
-                      $KANIKO_IMAGE \
-                      --dockerfile=/workspace/Dockerfile \
-                      --context=/workspace \
-                      --destination=$ECR_REPO:latest \
+                container('kaniko') {
+                    sh """
+                    /kaniko/executor \
+                      --dockerfile=\$WORKSPACE/Dockerfile \
+                      --context=\$WORKSPACE \
+                      --destination=\$ECR_REPO:latest \
                       --skip-tls-verify
-                    '''
+                    """
                 }
             }
         }
-
 
         stage('Deploy to EKS') {
             steps {
