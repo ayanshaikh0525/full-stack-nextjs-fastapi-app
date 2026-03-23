@@ -17,28 +17,26 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                sh '''
-                cd fastapi_backend
-                docker build -t fastapi-backend .
-
-              '''
-            }
-        }
-
-        stage('Tag & Push to ECR') {
+       stage('Build & Push Docker Image with Kaniko') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-jenkins']]) {
                     sh '''
-                    aws ecr get-login-password --region $AWS_REGION | \
-                        docker login --username AWS --password-stdin $ECR_REPO
-                    docker tag fastapi-backend:latest $ECR_REPO:latest
-                    docker push $ECR_REPO:latest
+                    mkdir -p /workspace/.docker
+                    echo "{\"credHelpers\": {\"$ECR_REPO\": \"ecr-login\"}}" > /workspace/.docker/config.json
+
+                    docker run --rm \
+                      -v $WORKSPACE:/workspace \
+                      -v /workspace/.docker:/kaniko/.docker \
+                      $KANIKO_IMAGE \
+                      --dockerfile=/workspace/Dockerfile \
+                      --context=/workspace \
+                      --destination=$ECR_REPO:latest \
+                      --skip-tls-verify
                     '''
                 }
             }
         }
+
 
         stage('Deploy to EKS') {
             steps {
