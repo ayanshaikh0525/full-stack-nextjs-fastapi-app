@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = 'us-east-1'
+        ECR_REPO = '928413605425.dkr.ecr.us-east-1.amazonaws.com/full-stack-backend'
+        CLUSTER_NAME = 'my-eks-cluster'
+        DEPLOYMENT_NAME = 'fastapi-deployment'
+    }
+
+    stages {
+
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ayanshaikh0525/full-stack-nextjs-fastapi-app.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                cd fastapi_backend
+                docker build -t fastapi-backend .
+
+              '''
+            }
+        }
+
+        stage('Tag & Push to ECR') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-jenkins']]) {
+                    sh '''
+                    aws ecr get-login-password --region $AWS_REGION | \
+                        docker login --username AWS --password-stdin $ECR_REPO
+                    docker tag fastapi-backend:latest $ECR_REPO:latest
+                    docker push $ECR_REPO:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to EKS') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-jenkins']]) {
+                    sh '''
+                    # Update kubeconfig for kubectl
+                    aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+
+                    # Update the deployment image
+                    kubectl set image deployment/$DEPLOYMENT_NAME fastapi-container=$ECR_REPO:latest
+
+                    # Optional: rollout status check
+                    kubectl rollout status deployment/$DEPLOYMENT_NAME
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment completed successfully!'
+        }
+        failure {
+            echo 'Deployment failed.'
+        }
+    }
+}
