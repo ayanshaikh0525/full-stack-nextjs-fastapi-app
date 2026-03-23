@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:24-dind'           // Docker-in-Docker image
-            args '--privileged'              // Required for DinD
-        }
-      }
+    agent any  // Now Jenkins node has Docker installed
 
     environment {
         AWS_REGION = 'us-east-1'
