@@ -33,10 +33,10 @@ jobs:
         run: cd nextjs-frontend && npm run build
 
       - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: nextjs-frontend
-          prod: true
+        run: |
+          pwd
+          ls -la
+          cd full-stack-nextjs-fastapi-app/nextjs-frontend
+          npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} \
+            --org ${{ secrets.VERCEL_ORG_ID }} \
+            --confirm
