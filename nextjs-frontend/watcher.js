@@ -15,7 +15,7 @@ chokidar.watch(openapiFile).on("change", (path) => {
       return;
     }
     if (stderr) {
-      console.error(`stderr: ${stderr}`);
+      console.error(`stderr : ${stderr}`);
       return;
     }
     console.log(`stdout : ${stdout}`);
