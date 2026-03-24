@@ -38,5 +38,5 @@ jobs:
           ls -la
           cd nextjs-frontend
           npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} \
-            --org ${{ secrets.VERCEL_ORG_ID }} \
+            --scope ${{ secrets.VERCEL_ORG_ID }} \
             --confirm
