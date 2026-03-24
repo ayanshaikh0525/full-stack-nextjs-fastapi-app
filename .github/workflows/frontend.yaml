@@ -37,6 +37,6 @@ jobs:
           cd nextjs-frontend
           npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} \
             --scope ${{ secrets.VERCEL_ORG_ID }} \
-            --env NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URl }} \
-            --env OPENAPI_OUTPUT_FILE=ope.json \
+            --build-env NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URl }} \
+            --build-env OPENAPI_OUTPUT_FILE=ope.json \
             --yes
