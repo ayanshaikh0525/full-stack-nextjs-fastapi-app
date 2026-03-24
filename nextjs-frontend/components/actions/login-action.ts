@@ -35,7 +35,7 @@ export async function login(prevState: unknown, formData: FormData) {
     }
     (await cookies()).set("accessToken", data.access_token);
   } catch (err) {
-    console.error("Login error:", err);
+    console.error("Login error: ", err);
     return {
       server_error: "An unexpected error occurred. Please try again later.",
     };
