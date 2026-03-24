@@ -27,7 +27,7 @@ export default function Page() {
               Login
             </CardTitle>
             <CardDescription className="text-sm text-gray-600 dark:text-gray-400">
-              Enter your email below to log in to your  account.
+              Enter your email below to log in to your account.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6 p-6">
