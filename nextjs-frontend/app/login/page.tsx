@@ -70,7 +70,7 @@ export default function Page() {
                 Forgot your password?
               </Link>
             </div>
-            <SubmitButton text="Sign In" />
+            <SubmitButton text="Sign In " />
             <FormError state={state} />
             <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
               Don&apos;t have an account?{" "}
