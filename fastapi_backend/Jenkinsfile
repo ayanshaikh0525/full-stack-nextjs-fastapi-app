@@ -1,84 +1,74 @@
 pipeline {
-  agent {
-        kubernetes {
-            label 'kaniko-agent'
-            defaultContainer 'jnlp'
-            yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:latest
-    command:
-      - cat
-    tty: true
-    volumeMounts:
-      - name: kaniko-secret
-        mountPath: /kaniko/.docker
-  volumes:
-  - name: kaniko-secret
-    secret:
-      secretName: kaniko-secret
-"""
-        }
-    }
+    agent any
 
     environment {
-        AWS_REGION = 'us-east-1'
-        ECR_REPO = '928413605425.dkr.ecr.us-east-1.amazonaws.com/full-stack-backend'
-        CLUSTER_NAME = 'my-eks-cluster'
-        DEPLOYMENT_NAME = 'fastapi-deployment'
-       
+        AWS_REGION = "us-east-1"
+        ECR_REPO = "928413605425.dkr.ecr.${AWS_REGION}.amazonaws.com/full-stack-backend"
+        IMAGE_TAG = "latest"
+        CLUSTER_NAME = "my-eks-cluster"
     }
 
     stages {
 
-        stage('Clone Repository') {
+        stage('Clone Repo') {
             steps {
                 git branch: 'main', url: 'https://github.com/ayanshaikh0525/full-stack-nextjs-fastapi-app.git'
             }
         }
 
-        
-       stage('Build & Push Docker Image with Kaniko') {
+        stage('Build Docker Image') {
             steps {
-                container('kaniko') {
-                    sh """
-                    /kaniko/executor \
-                      --dockerfile=\$WORKSPACE/Dockerfile \
-                      --context=\$WORKSPACE \
-                      --destination=\$ECR_REPO:latest \
-                      --skip-tls-verify
-                    """
-                }
+                sh '''
+                cd fastapi_backend
+                docker build -t my-app .
+                
+                '''
+            }
+        }
+
+        stage('Tag Image') {
+            steps {
+                sh 'docker tag my-app:latest $ECR_REPO:$IMAGE_TAG'
+            }
+        }
+
+        stage('Login to ECR') {
+            steps {
+                sh '''
+                    aws ecr get-login-password --region $AWS_REGION \
+                    | docker login --username AWS --password-stdin $ECR_REPO
+                '''
+            }
+        }
+
+        stage('Push to ECR') {
+            steps {
+                sh 'docker push $ECR_REPO:$IMAGE_TAG'
             }
         }
 
         stage('Deploy to EKS') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-jenkins']]) {
-                    sh '''
-                    # Update kubeconfig for kubectl
-                    aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-                    # Update the deployment image
-                    kubectl set image deployment/$DEPLOYMENT_NAME fastapi-container=$ECR_REPO:latest
+                         sh '''
+            aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-                    # Optional: rollout status check
-                    kubectl rollout status deployment/$DEPLOYMENT_NAME
-                    '''
-                }
+            echo "🚀 Updating deployment image..."
+            kubectl set image deployment/fastapi-deployment fastapi=$ECR_REPO:$IMAGE_TAG --record
+            kubectl rollout restart deployment/fastapi-deployment
+            echo "📜 Rollout history:"
+            kubectl rollout history deployment/fastapi-deployment
+
+            echo "⏳ Waiting for rollout..."
+            if ! kubectl rollout status deployment/fastapi-deployment --timeout=120s; then
+                echo "❌ Rollout failed! Rolling back..."
+                kubectl rollout undo deployment/fastapi-deployment
+                exit 1
+            fi
+
+            echo "✅ Deployment successful!"
+            '''
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Deployment completed successfully!'
-        }
-        failure {
-            echo 'Deployment failed.'
         }
     }
 }
