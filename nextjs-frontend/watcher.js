@@ -11,7 +11,7 @@ chokidar.watch(openapiFile).on("change", (path) => {
   console.log(`File ${path} has been modified. Running generate-client...`);
   exec("pnpm run generate-client", (error, stdout, stderr) => {
     if (error) {
-      console.error(`Error: ${error.message}`);
+      console.error(`Error : ${error.message}`);
       return;
     }
     if (stderr) {
