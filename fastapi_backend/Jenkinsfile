@@ -1,18 +1,55 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush()
+    }
+
     environment {
         AWS_REGION = "us-east-1"
-        ECR_REPO = "928413605425.dkr.ecr.${AWS_REGION}.amazonaws.com/full-stack-backend"
-        IMAGE_TAG = "latest"
+        ACCOUNT_ID = "928413605425"
+        ECR_REPO = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/full-stack-backend"
+        IMAGE_TAG = "${BUILD_NUMBER}"   // 🔥 unique tag (important)
         CLUSTER_NAME = "my-eks-cluster"
     }
 
     stages {
 
-        stage('Clone-Repo') {
+        stage('Clone Repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/ayanshaikh0525/full-stack-nextjs-fastapi-app.git'
+                git url: 'https://github.com/ayanshaikh0525/full-stack-nextjs-fastapi-app.git'
+            }
+        }
+
+        stage('Check Conditions') {
+            steps {
+                script {
+                    echo "Branch: ${env.GIT_BRANCH}"
+
+                    // ✅ Branch filter
+                    if (env.GIT_BRANCH != 'origin/main') {
+                        echo "❌ Not main branch. Skipping pipeline."
+                        currentBuild.result = 'NOT_BUILT'
+                        return
+                    }
+
+                    // ✅ Detect changed files
+                    def changedFiles = sh(
+                        script: "git diff --name-only HEAD~1 HEAD || git show --name-only",
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Changed files:\n${changedFiles}"
+
+                    // ✅ Folder filter
+                    if (!changedFiles.contains("fastapi_backend/")) {
+                        echo "❌ No backend changes. Skipping pipeline."
+                        currentBuild.result = 'NOT_BUILT'
+                        return
+                    }
+
+                    echo "✅ Conditions met. Continuing pipeline..."
+                }
             }
         }
 
@@ -20,54 +57,54 @@ pipeline {
             steps {
                 sh '''
                 cd fastapi_backend
-                docker build -t my-app .
-                
+                docker build -t my-app:$IMAGE_TAG .
                 '''
             }
         }
 
         stage('Tag Image') {
             steps {
-                sh 'docker tag my-app:latest $ECR_REPO:$IMAGE_TAG'
-            }
-        }
-
-        stage('Login to ECR') {
-            steps {
                 sh '''
-                    aws ecr get-login-password --region $AWS_REGION \
-                    | docker login --username AWS --password-stdin $ECR_REPO
+                docker tag my-app:$IMAGE_TAG $ECR_REPO:$IMAGE_TAG
                 '''
             }
         }
 
         stage('Push to ECR') {
             steps {
-                sh 'docker push $ECR_REPO:$IMAGE_TAG'
+                sh '''
+                aws ecr get-login-password --region $AWS_REGION \
+                | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+                docker push $ECR_REPO:$IMAGE_TAG
+                '''
             }
         }
 
         stage('Deploy to EKS') {
             steps {
+                sh '''
+                aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-                         sh '''
-            aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+                echo "🚀 Deploying image: $IMAGE_TAG"
 
-            echo "🚀 Updating deployment image..."
-            kubectl set image deployment/fastapi-deployment fastapi=$ECR_REPO:$IMAGE_TAG --record
-            kubectl rollout restart deployment/fastapi-deployment
-            echo "📜 Rollout history:"
-            kubectl rollout history deployment/fastapi-deployment
+                kubectl set image deployment/fastapi-deployment fastapi=$ECR_REPO:$IMAGE_TAG --record
 
-            echo "⏳ Waiting for rollout..."
-            if ! kubectl rollout status deployment/fastapi-deployment --timeout=120s; then
-                echo "❌ Rollout failed! Rolling back..."
-                kubectl rollout undo deployment/fastapi-deployment
-                exit 1
-            fi
+                echo "⏳ Waiting for rollout..."
+                if ! kubectl rollout status deployment/fastapi-deployment --timeout=120s; then
+                    echo "❌ Rollout failed! Rolling back..."
+                    kubectl rollout undo deployment/fastapi-deployment
+                    exit 1
+                fi
 
-            echo "✅ Deployment successful!"
-            '''
+                echo "📦 Pods after deployment:"
+                kubectl get pods
+
+                echo "📜 Rollout history:"
+                kubectl rollout history deployment/fastapi-deployment
+
+                echo "✅ Deployment successful!"
+                '''
             }
         }
     }
