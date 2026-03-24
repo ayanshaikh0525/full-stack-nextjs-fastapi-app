@@ -21,7 +21,7 @@ pipeline {
             }
         }
 
-        stage('Check Conditions') {
+        stage('Check-Conditions') {
             steps {
                 script {
                     echo "Branch: ${env.GIT_BRANCH}"
