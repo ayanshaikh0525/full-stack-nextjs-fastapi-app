@@ -18,6 +18,6 @@ chokidar.watch(openapiFile).on("change", (path) => {
       console.error(`stderr: ${stderr}`);
       return;
     }
-    console.log(`stdout: ${stdout}`);
+    console.log(`stdout : ${stdout}`);
   });
 });
