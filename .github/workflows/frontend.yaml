@@ -30,7 +30,7 @@ jobs:
         run: cd nextjs-frontend && npm install
 
       - name: Build
-        run: npm run build
+        run: cd nextjs-frontend && npm run build
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v20
