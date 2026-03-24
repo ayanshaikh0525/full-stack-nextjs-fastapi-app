@@ -36,7 +36,7 @@ jobs:
         run: |
           pwd
           ls -la
-          cd full-stack-nextjs-fastapi-app/nextjs-frontend
+          cd nextjs-frontend
           npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} \
             --org ${{ secrets.VERCEL_ORG_ID }} \
             --confirm
