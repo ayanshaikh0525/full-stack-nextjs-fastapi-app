@@ -10,18 +10,17 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: nextjs-frontend
     steps:
-      - name: Debug and run
-        run: |
-          pwd
-          ls -la
-          ls -la nextjs-frontend
         
       - uses: actions/checkout@v3
-
+        with:
+          path: .
+          
+      - name: debug and run
+        run: |
+          pwd
+          ls -la 
+          
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
