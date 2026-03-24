@@ -67,7 +67,7 @@ export default function Page() {
                 href="/password-recovery"
                 className="ml-auto inline-block text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500"
               >
-                Forgot your password?
+                Forgot your password ?
               </Link>
             </div>
             <SubmitButton text="Sign In " />
