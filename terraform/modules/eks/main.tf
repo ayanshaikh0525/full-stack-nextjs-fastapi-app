@@ -16,4 +16,32 @@ module "eks" {
       instance_types = ["t3.medium"]
     }
   }
+
+
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_private_access = true
+
+
+
 }
+
+
+resource "aws_eks_access_entry" "ayan" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = "arn:aws:iam::928413605425:user/ayan-development"
+  type          = "STANDARD"
+}
+
+
+resource "aws_eks_access_policy_association" "ayan_admin" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = "arn:aws:iam::928413605425:user/ayan-development"
+
+  policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+}
+
+
