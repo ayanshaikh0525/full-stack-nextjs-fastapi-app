@@ -51,13 +51,71 @@ resource "aws_iam_role_policy" "bastion_eks_policy" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+     Statement = [
       {
         Effect = "Allow"
         Action = [
           "eks:*"
         ]
-        Resource = "arn:aws:eks:us-east-1:928413605425:cluster/fast-api-cluster"
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:GetOpenIDConnectProvider",
+          "iam:CreateOpenIDConnectProvider",
+          "iam:ListOpenIDConnectProviders"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:CreatePolicy",
+          "iam:AttachRolePolicy",
+          "iam:GetPolicy",
+          "iam:ListPolicies",
+          "iam:PassRole"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudformation:CreateStack",
+          "cloudformation:DescribeStacks",
+          "cloudformation:UpdateStack",
+          "cloudformation:DeleteStack",
+          "cloudformation:ListStacks",
+          "cloudformation:DescribeStackResources"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:CreateRole",
+          "iam:DeleteRole",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:PassRole",
+          "iam:GetRole",
+          "iam:ListRoles",
+          "iam:TagRole",
+          "iam:UntagRole"
+        ]
+        Resource = "*"
+      },
+         {
+        Effect = "Allow"
+        Action = [
+          "iam:ListAttachedRolePolicies",
+          "iam:DetachRolePolicy",
+          "iam:DeleteRolePolicy",
+          "iam:DeleteRole",
+          "iam:ListRolePolicies"
+        ]
+        Resource = "*"
       }
     ]
   })
