@@ -42,6 +42,9 @@ systemctl enable docker
 usermod -aG docker ubuntu
 usermod -aG docker jenkins
 
+sudo systemctl restart jenkins
+sudo systemctl restart docker
+
 # ----------------------------
 # Install AWS CLI v2
 # ----------------------------
