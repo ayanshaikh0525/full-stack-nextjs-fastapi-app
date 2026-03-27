@@ -10,7 +10,8 @@ pipeline {
 
         stage('Clone Repo') {
             steps {
-                git url: 'https://github.com/ayanshaikh0525/full-stack-nextjs-fastapi-app.git'
+                git branch: 'main',
+                    url: 'https://github.com/ayanshaikh0525/full-stack-nextjs-fastapi-app.git'
             }
         }
 
