@@ -21,16 +21,49 @@ module "eks" {
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
 
+  enable_cluster_creator_admin_permissions = true
+
+    access_entries = {
+      jenkins = {
+        principal_arn = var.jenkins_role_arn
+
+        policy_associations = {
+          admin = {
+            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+            access_scope = {
+              type = "cluster"
+            }
+          }
+        }
+      }
+
+     bastion = {
+      principal_arn = var.bastion_role_arn
+
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+
+  }
+    }
+
+    
 
 
-}
 
 
-resource "aws_eks_access_entry" "ayan" {
-  cluster_name  = module.eks.cluster_name
-  principal_arn = "arn:aws:iam::928413605425:user/ayan-development"
-  type          = "STANDARD"
-}
+# resource "aws_eks_access_entry" "ayan" {
+#   cluster_name  = module.eks.cluster_name
+#   principal_arn = "arn:aws:iam::928413605425:user/ayan-development"
+#   type          = "STANDARD"
+# }
 
 
 resource "aws_eks_access_policy_association" "ayan_admin" {

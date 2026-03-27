@@ -6,13 +6,7 @@ module "vpc" {
 }
 
 
-module "rds" {
-  source = "../../modules/rds"
 
-  db_subnets  = module.vpc.database_subnets
-  db_user     = var.db_user
-  db_password = var.db_password
-}
 
 
 module "ecr" {
@@ -28,6 +22,16 @@ module "eks" {
   cluster_name    = var.cluster_name
   vpc_id          = module.vpc.vpc_id
   private_subnets = module.vpc.private_subnets
+  bastion_role_arn = module.ec2.bastion_role_arn
+  jenkins_role_arn = module.jenkins_ec2.jenkins_role_arn
+}
+
+module "jenkins_ec2" {
+  source = "../../modules/jenkins-ec2"
+
+  public_subnet_id = module.vpc.public_subnets[0]
+  vpc_id = module.vpc.vpc_id
+
 }
 
 
@@ -42,4 +46,16 @@ module "ec2" {
   region = var.region
   cluster_security_group_id = module.eks.cluster_security_group_id
 
+}
+
+
+module "rds" {
+  source = "../../modules/rds"
+
+  db_subnets  = module.vpc.database_subnets
+  db_user     = var.db_user
+  db_password = var.db_password
+
+  node_security_group_id = module.eks.node_security_group_id
+  vpc_id = module.vpc.vpc_id
 }

@@ -21,3 +21,22 @@ resource "aws_db_instance" "postgres" {
 
   skip_final_snapshot = true
 }
+
+resource "aws_security_group" "rds" {
+  name        = "rds-postgres-sg"
+  description = "Allow PostgreSQL access from EKS nodes"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "rds-postgres-sg"
+  }
+}
+
+resource "aws_security_group_rule" "eks_to_rds" {
+  type                     = "ingress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.rds.id
+  source_security_group_id = var.node_security_group_id
+}

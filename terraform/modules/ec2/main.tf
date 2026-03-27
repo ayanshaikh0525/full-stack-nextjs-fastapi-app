@@ -8,16 +8,9 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["20.192.21.55/32"]  # 🔥 Replace with your IP
+    cidr_blocks = ["4.240.39.202/32"]  # 🔥 Replace with your IP
   }
 
-    ingress {
-    description = "SSH from my IP"
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # 
-  }
 
   egress {
     from_port   = 0
