@@ -29,7 +29,7 @@ module "eks" {
 module "jenkins_ec2" {
   source = "../../modules/jenkins-ec2"
 
-  public_subnet_id = module.vpc.public_subnets[0]
+  public_subnet_id = module.vpc.public_subnets[1]
   vpc_id = module.vpc.vpc_id
 
 }

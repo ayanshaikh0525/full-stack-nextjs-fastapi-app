@@ -26,4 +26,16 @@ aws eks update-kubeconfig \
 # Install Helm
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
+
+# Install eksctl
+# 1. Download the latest release
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+
+# 2. Move the binary to /usr/local/bin
+mv /tmp/eksctl /usr/local/bin
+
+# 3. Verify installation
+eksctl version
+
+
 echo "DONE"
