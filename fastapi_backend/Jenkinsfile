@@ -5,13 +5,6 @@ pipeline {
         githubPush()
     }
 
-    environment {
-        AWS_REGION = "us-east-1"
-        ACCOUNT_ID = "928413605425"
-        ECR_REPO = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
-        IMAGE_TAG = "${BUILD_NUMBER}"   // 🔥 unique tag (important)
-        CLUSTER_NAME = "${CLUSTER_NAME}"
-    }
 
     stages {
 
