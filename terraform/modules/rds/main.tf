@@ -15,11 +15,14 @@ resource "aws_db_instance" "postgres" {
   username = var.db_user
   password = var.db_password
 
+  vpc_security_group_ids = [aws_security_group.rds.id]
+
   publicly_accessible = false
 
   db_subnet_group_name = aws_db_subnet_group.db.name
 
   skip_final_snapshot = true
+
 }
 
 resource "aws_security_group" "rds" {
@@ -39,4 +42,5 @@ resource "aws_security_group_rule" "eks_to_rds" {
   protocol                 = "tcp"
   security_group_id        = aws_security_group.rds.id
   source_security_group_id = var.node_security_group_id
+  # cidr_blocks = ["0.0.0.0/0"]
 }
