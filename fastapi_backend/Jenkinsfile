@@ -51,7 +51,7 @@ pipeline {
             steps {
                 sh '''
                 cd fastapi_backend
-                docker build -t my-app:$IMAGE_TAG .
+                docker build -t my-app .
                 '''
             }
         }
