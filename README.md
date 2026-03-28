@@ -48,6 +48,7 @@ User → Vercel (Next.js)
 
 ---
 
+
 ## Setup
 
 ## Configure AWS CLI (Required for Terraform)
@@ -579,18 +580,6 @@ git push origin main
 2. Check that the workflow ran successfully
 3. Once completed, your Next.js app will be deployed to Vercel
 4. Access the frontend at your Vercel project URL
-
-
-#### Project Structure
-
-```
-.
-├── backend/
-├── frontend/
-├── terraform/
-├── k8s/
-└── Jenkinsfile
-```
 
 ---
 
