@@ -53,7 +53,7 @@ User → Vercel (Next.js)
 ### Infrastructure
 
 ```bash
-cd terraform
+cd terraform/environments/dev
 terraform init
 terraform apply -auto-approve
 ```
