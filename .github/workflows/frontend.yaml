@@ -38,6 +38,8 @@ jobs:
           
           rm -rf .vercel
           
+          npm install -g vercel@32.6.0
+          
           npx vercel --prod \
           --token ${{ secrets.VERCEL_TOKEN }} \
           --yes
