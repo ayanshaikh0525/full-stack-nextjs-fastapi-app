@@ -502,6 +502,85 @@ After pushing the change to GitHub:
 **Note:** This confirms that the GitHub webhook is correctly configured and your Jenkins pipeline is working as expected.
 
 
+## Vercel Deployment via GitHub Actions
+
+This guide explains how to set up Vercel deployment using GitHub Actions for your Next.js frontend. It covers creating the `.vercel` folder locally, generating a Vercel token, and configuring GitHub Actions environment variables.
+
+---
+
+## Step 1: Configure `.vercel` Folder Locally
+
+1. Navigate to your frontend folder:
+
+```bash
+cd full-stack-nextjs-fastapi-app/nextjs-frontend
+```
+
+2. Login to Vercel via CLI:
+   ```
+    vercel login        
+   ```
+
+3. Link the project to your Vercel account:
+   ```bash
+   vercel link
+   ```
+   - Select your account
+   - Choose an existing project or create a new one
+   - Set Root Directory as → **Just the push event**
+   - Framework should auto-detect as Next.js
+   - After linking, the .vercel folder is created
+```
+frontend/
+├── .vercel/
+│   └── project.json
+```
+
+## Step 2: Generate Vercel Token
+1. Go to Vercel Dashboard → Settings → Tokens
+2. Click Create Token
+3. Copy the generated token (keep it secret)
+
+## Step 3: Add Vercel Token to GitHub Actions
+1. Go to your GitHub repository → Settings → Secrets and Variables → Actions → New repository secret
+2. Add a secret:
+   - Name: **VERCEL_TOKEN**
+   - Value: **<your-vercel-token>**
+3. Save the secret
+
+## Trigger Vercel Deployment via GitHub Actions
+
+To make the Vercel deployment trigger work, you need to push changes from your `nextjs-frontend` app to GitHub. This will activate the GitHub Actions workflow configured in the previous step.
+
+### Step 1: Navigate to Frontend Folder
+
+```bash
+cd full-stack-nextjs-fastapi-app/frontend
+```
+
+### Step 2: Make a Minor Change
+```
+echo "// trigger deployment" >> .trigger
+```
+
+### Step 3: Stage and Commit the Change
+```
+git add .
+git commit -m "Trigger Vercel deployment via GitHub Actions"
+```
+
+### Step 4: Push to GitHub
+```
+git push origin main
+```
+
+### Step 5: Verify Deployment
+1. Go to GitHub → Actions
+2. Check that the workflow ran successfully
+3. Once completed, your Next.js app will be deployed to Vercel
+4. Access the frontend at your Vercel project URL
+
+
 #### Project Structure
 
 ```
