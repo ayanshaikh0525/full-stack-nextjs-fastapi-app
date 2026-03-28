@@ -1,5 +1,6 @@
+<img width="1024" height="1024" alt="A28E7DAC-5A10-4153-B62C-8DC199CE7807" src="https://github.com/user-attachments/assets/328442f9-870f-47e7-8a39-aef651db854f" />
 
-<a href="https://www.vintasoftware.com/blog/next-js-fastapi-template"><img src="docs/images/banner.png" alt="Next.js FastAPI Template" width="auto"></a>
+
 
 # Next.js FastAPI Template
 
